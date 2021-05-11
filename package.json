@@ -1,0 +1,38 @@
+{
+  "name": "discord.html",
+  "version": "1.0.0",
+  "description": "A package that allows you to write discord bots in typescript",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "shx rm -rf lib/",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DistortedPumpkin/discord.html.git"
+  },
+  "keywords": [
+    "discord",
+    "discord-bot"
+  ],
+  "contributors": [
+    "DistortedPumpkin",
+    "Dragon <mrdragonplays2683@gmail.com>"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DistortedPumpkin/discord.html/issues"
+  },
+  "homepage": "https://github.com/DistortedPumpkin/discord.html#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.9",
+    "discord.js": "^12.5.3",
+    "fs": "0.0.1-security"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.28",
+    "@types/node": "^15.0.2",
+    "shx": "^0.3.3"
+  }
+}
