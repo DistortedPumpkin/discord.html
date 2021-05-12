@@ -1,19 +1,19 @@
+import { load } from "cheerio";
 import { HTMLBot } from "./bot";
-import * as cheerio from 'cheerio';
 
 export class Parser {
 
-    constructor() { }
+  constructor() { }
 
-    parse(bot: HTMLBot, html: string) {
-        let parsed = cheerio.load(html)
-        parsed('data').each((i, data) => {
+  parse(bot: HTMLBot, html: string) {
+    const parsed = load(html);
+
+    // Loop over constants in header
+    parsed('header > data').each((i, data: any) => {
+      bot.globalStorage.set(data.attribs.name,parsed(data).text())
+    });
   
-        const stuff = `${data.attribs.name}: ${x(data).text()} `
-
-        console.log(stuff)
-        })
-    }
+  }
 
 }
 
