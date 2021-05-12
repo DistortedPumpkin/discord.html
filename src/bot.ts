@@ -4,11 +4,13 @@ import { Parser } from "./parser";
 export class HTMLBot {
 
     globalStorage: Map<string, any>;
+    commands: Map<string, any>;
 
     private _parser: Parser;
 
     constructor() {
         this._parser = new Parser();
+        this.commands = new Map();
         this.globalStorage = new Map();
         this.globalStorage.set("prefix", "!");
         this.globalStorage.set("status", "Running on HTML!");
