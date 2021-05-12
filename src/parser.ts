@@ -12,6 +12,16 @@ export class Parser {
     parsed('header > data').each((i, data: any) => {
       bot.globalStorage.set(data.attribs.name,parsed(data).text())
     });
+    
+    parsed('div[type=command]').each((i, data) => {
+      const cmd_data = {};
+      const cmd_parse = parsed(data);
+      cmd_parse.find('data').each((i, d_data) => {
+        cmd_data[d_data.attribs.name] = parsed(d_data).text();
+      });
+      bot.commands.set(cmd_data['name'], cmd_data);
+    });
+
   
   }
 
