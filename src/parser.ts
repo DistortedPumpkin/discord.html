@@ -6,23 +6,14 @@ export class Parser {
     constructor() { }
 
     parse(bot: HTMLBot, html: string) {
+        let parsed = cheerio.load(html)
+        parsed('data').each((i, data) => {
+  
+        const stuff = `${data.attribs.name}: ${x(data).text()} `
 
+        console.log(stuff)
+        })
     }
 
 }
-
-let x = cheerio.load(`
-<head>
-    <data name="token">TOKEN HERE</data>
-    <data name="prefix">!</data>
-    <data name="status">Running on HTML!</data>
-</head>`)
-x('data').each((i, data) => {
-  
-  const stuff = `${data.attribs.name}: ${x(data).text()} `
-
-  console.log(stuff)
-})
-
-
 
