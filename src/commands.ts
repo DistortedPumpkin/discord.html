@@ -1,12 +1,17 @@
 class Command{
   readonly name: string;
   actions: Action[];
-  constructor(name: string){
+  constructor(name: string, actions: Action[]){
     this.name = name;
-    actions = [];
+    this.actions = actions;
   }
+  
   addAction(action: Action) {
     this.actions.push(action);
+  }
+  
+  removeAction(action: Action) {
+    delete this.actions[action];
   }
 }
 
