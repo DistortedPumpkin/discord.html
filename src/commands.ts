@@ -5,6 +5,9 @@ class Command{
     this.name = name;
     actions = [];
   }
+  addAction(action: Action) {
+    this.actions.push(action);
+  }
 }
 
 abstract class Action {
