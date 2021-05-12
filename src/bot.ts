@@ -27,10 +27,7 @@ export class HTMLBot {
     }
     
     addCommand(data: any) {
-        cmd = Command(data)
-        data['actions'].forEach(action => {
-            cmd.addAction(action)
-        });
+        cmd = Command(data['name'], data['actions'])
         this.commands.set(data.name, cmd)
     }
 }
