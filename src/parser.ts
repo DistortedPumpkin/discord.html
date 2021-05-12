@@ -1,5 +1,6 @@
 import { load } from "cheerio";
 import { HTMLBot } from "./bot";
+import { Action } from "./commands"
 
 export class Parser {
 
@@ -10,17 +11,20 @@ export class Parser {
 
     // Loop over constants in header
     parsed('header > data').each((i, data: any) => {
-      bot.globalStorage.set(data.attribs.name,parsed(data).text())
+      bot.globalStorage.set(data.attribs.name, parsed(data).text())
     });
     
     parsed('div[type=command]').each((i, data) => {
       const cmd_data = {};
       const cmd_parse = parsed(data);
-      cmd_parse.find('data').each((i, d_data) => {
-        cmd_data[d_data.attribs.name] = parsed(d_data).text();
+      const parsed_name = cmd_parse.find('data[name=name]').text();
+      cmd_data['name'] = parsed_name;
+      const actions = [];
+      cmd_parse.find('div[type=code] > div[type=action]').each((i, action_data: any) => {
+        actions.push(Action(action_data.attribs.action));
       });
-      bot.add_command(cmd_data);
-      // bot.commands.set(cmd_data['name'], cmd_data);
+      cmd_data['actions'] = actions;
+      bot.addCommand(cmd_data);
     });
 
   
