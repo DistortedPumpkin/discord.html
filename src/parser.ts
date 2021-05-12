@@ -19,7 +19,8 @@ export class Parser {
       cmd_parse.find('data').each((i, d_data) => {
         cmd_data[d_data.attribs.name] = parsed(d_data).text();
       });
-      bot.commands.set(cmd_data['name'], cmd_data);
+      bot.add_command(cmd_data);
+      // bot.commands.set(cmd_data['name'], cmd_data);
     });
 
   
