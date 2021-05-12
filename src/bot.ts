@@ -1,10 +1,11 @@
 import { readFile } from "fs/promises";
 import { Parser } from "./parser";
+import { Command } from "./commands"
 
 export class HTMLBot {
 
     globalStorage: Map<string, any>;
-    commands: Map<string, any>;
+    commands: Map<string, Command>;
 
     private _parser: Parser;
 
@@ -23,5 +24,13 @@ export class HTMLBot {
 
     addHTML(html: string) {
         this._parser.parse(this, html);
+    }
+    
+    addCommand(data: any) {
+        cmd = Command(data)
+        data['actions'].forEach(action => {
+            cmd.addAction(action)
+        });
+        this.commands.set(data.name, cmd)
     }
 }
