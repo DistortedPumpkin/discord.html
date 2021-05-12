@@ -9,6 +9,7 @@ export class HTMLBot {
 
     constructor() {
         this._parser = new Parser();
+        this.globalStorage = new Map();
         this.globalStorage.set("prefix", "!");
         this.globalStorage.set("status", "Running on HTML!");
     }
