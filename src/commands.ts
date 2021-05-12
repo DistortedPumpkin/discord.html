@@ -1,4 +1,4 @@
-class Command{
+export class Command{
   readonly name: string;
   actions: Action[];
   constructor(name: string, actions: Action[]){
