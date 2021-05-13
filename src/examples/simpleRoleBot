@@ -1,0 +1,23 @@
+<html>
+
+<head>
+    <data name="token">TOKEN HERE</data>
+    <data name="prefix">!</data>
+    <data name="status">Running on HTML!</data>
+</head>
+
+<div type="command">
+    <data name="name">addrole</data>
+    <data name="param", required=true>role</data>
+
+    <div type="code">
+
+        <div type="action", action="addRole">
+            <var context="local">guild.roles.cache.find(r => r.id == role or r.id == role.substr(3, role.length - 4) or r.name.startsWith(role))</var>
+        </div>
+
+    </div>
+
+</div>
+
+</html>
