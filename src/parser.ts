@@ -1,6 +1,7 @@
 import { load } from "cheerio";
+import { ActionManager } from "./actions/ActionManager";
 import { HTMLBot } from "./bot";
-import { Action } from "./commands"
+import { Command } from "./command";
 
 export class Parser {
 
@@ -13,22 +14,19 @@ export class Parser {
     parsed('header > data').each((i, data: any) => {
       bot.globalStorage.set(data.attribs.name, parsed(data).text())
     });
-    
+
     parsed('div[type=command]').each((i, data) => {
-      const cmd_data = {};
       const cmd_parse = parsed(data);
-      const parsed_name = cmd_parse.find('data[name=name]').text();
-      cmd_data['name'] = parsed_name;
-      const actions = [];
-      cmd_parse.find('div[type=code] > div[type=action]').each((i, action_data: any) => {
-        actions.push(Action(action_data.attribs.action));
-      });
-      cmd_data['actions'] = actions;
-      bot.addCommand(cmd_data);
+      const command = new Command(cmd_parse.find('data[name=name]').text());
+      cmd_parse.find('div[type=code] > div[type=action]')
+        .each((i, action_data: any) => {
+          const x = parsed(action_data);
+          const action = ActionManager.getAction(x.attr("action"), x);
+          if (action)
+            command.addAction(action);
+        });
+      bot.addCommand(command);
     });
-
-  
   }
-
 }
 
