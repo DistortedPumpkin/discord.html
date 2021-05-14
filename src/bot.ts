@@ -47,13 +47,12 @@ export class HTMLBot {
 
         this.eris = new Client(this.globalStorage.get("token"));
 
-
         this.eris.on("messageCreate", (message: Message) => {
+            if (message.author.bot) return;
             if (!message.content.startsWith(this.globalStorage.get("prefix"))) return;
             const commandName = message.content.slice(this.globalStorage.get("prefix").length).split(" ")[0];
             if (!this.commands.has(commandName)) return;
             const context = Command.getCommandContext(message);
-            console.log("executing command", commandName);
             this.commands.get(commandName).execute(this, context);
         });
 
