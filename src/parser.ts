@@ -17,12 +17,12 @@ export class Parser {
     });
 
     parsed('div[type=command]').each((i, data) => {
-      const cmd_parse = parsed(data);
-      const command = new Command(Util.getData(cmd_parse, "name"));
-      cmd_parse.find('div[type=code] > div[type=action]')
-        .each((i, action_data: any) => {
-          const x = parsed(action_data);
-          const action = ActionManager.getAction(x.attr("action"), x);
+      const cmdParse = parsed(data);
+      const command = new Command(Util.getData(cmdParse, "name"));
+      cmdParse.find('div[type=code] > div[type=action]')
+        .each((i, actionData: any) => {
+          const actionParse = parsed(actionData);
+          const action = ActionManager.getAction(actionParse.attr("action"), actionParse);
           if (action)
             command.addAction(action);
         });
