@@ -2,6 +2,7 @@ import { load } from "cheerio";
 import { ActionManager } from "./actions/ActionManager";
 import { HTMLBot } from "./bot";
 import { Command } from "./command";
+import { Util } from "./util";
 
 export class Parser {
 
@@ -17,7 +18,7 @@ export class Parser {
 
     parsed('div[type=command]').each((i, data) => {
       const cmd_parse = parsed(data);
-      const command = new Command(cmd_parse.find('data[name=name]').text());
+      const command = new Command(Util.getData(cmd_parse, "name"));
       cmd_parse.find('div[type=code] > div[type=action]')
         .each((i, action_data: any) => {
           const x = parsed(action_data);
