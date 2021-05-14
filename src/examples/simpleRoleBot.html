@@ -1,18 +1,18 @@
 <html>
 
-<head>
+<header>
     <data name="token">TOKEN HERE</data>
     <data name="prefix">!</data>
     <data name="status">Running on HTML!</data>
-</head>
+</header>
 
 <div type="command">
     <data name="name">addrole</data>
-    <data name="param", required=true>role</data>
+    <data name="param" required=true>role</data>
 
     <div type="code">
 
-        <div type="action", action="addRole">
+        <div type="action" action="addRole">
             <var context="local">role</var>
         </div>
 
