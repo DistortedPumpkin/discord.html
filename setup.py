@@ -33,5 +33,5 @@ setup(
         "Operating System :: OS Independent",
         "Development Status :: 2 - Pre-Alpha"
     ],
-    packages=['discordhtml']
+    packages=find_packages()
 )
