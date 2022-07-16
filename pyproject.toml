@@ -12,6 +12,7 @@ description = "A revolutionary library to interact with the Discord API using HT
 readme = "README.md"
 license = { file="LICENSE" }
 requires-python = ">=3.8.0"
+dependencies = ['discord.py==2.0.0a', 'bs4']
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
