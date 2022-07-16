@@ -2,7 +2,7 @@ import re
 from bs4 import BeautifulSoup
 from .errors import CommandMissingData, CommandActionMissingData, CommandActionMissingType
 from .commands import Command, Context, Parameter
-from .utils import MISSING
+from .utils import MISSING, to_bool
 
 VAR_PATTERN_1 = re.compile(r'<var context="(local|global)">(.*)<\/var>')  # noqa
 VAR_PATTERN_2 = re.compile(r'(\{\{|\[\[)(.*)(\}\}|\]\])')  # noqa
@@ -36,7 +36,11 @@ class Parser:
         name = attrs['name'][0]
         params = []
         for param_tag in tag.find_all('data', {'type': 'param'}, recursive=False):
-            params.append(Parameter(param_tag.attrs['name'], param_tag.attrs.get('value', MISSING), param_tag.attrs.get('consume', False)))
+            params.append(Parameter(
+                param_tag.attrs['name'], 
+                param_tag.attrs.get('value') or MISSING,  # Empty string will return MISSING 
+                to_bool(param_tag.attrs.get('consume', False))
+            ))
         code = tag.find('div', {'type': 'code'}, recursive=False)
         command = Command(name, aliases=attrs['name'][1:], params=params)
         if code:
