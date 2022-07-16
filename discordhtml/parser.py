@@ -81,7 +81,7 @@ class Parser:
             storage = ctx.storage if m.group(1) == '{{' else ctx.bot.storage
             current = storage.get(thing[0], thing[0])
             if len(thing) < 2:
-                return current
+                return str(current)
             for attr in thing[1:]:  # Deal wiith x.y.z because that must be done after getting the variable from storage
                 try:
                     res = getattr(current, attr)
