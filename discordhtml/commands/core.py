@@ -23,7 +23,11 @@ class Context:
         for i, param in enumerate(self.command.params):
             if len(self.args) > i:
                 if i + 1 == len(self.command.params):  # This is the last Parameter
+<<<<<<< HEAD
                     self.storage[param.name] = ' '.join(self.args[i if not param.consume_rest else i:])
+=======
+                    storage[param.name] = ' '.join(self.args[i if not param.consume_rest else i:])
+>>>>>>> 976729a96b96861a1f34c48e5d6a0da7251086de
                 else:
                     self.storage[param.name] = self.args[i]
             else:
