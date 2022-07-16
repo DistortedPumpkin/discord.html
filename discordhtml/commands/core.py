@@ -15,31 +15,32 @@ class Context:
         self.command = command
         self.bot = bot
         self.args = args or []
-        self.storage = self.parse_arguments()
+        self.storage = {"ctx": self}
+        self._parse_arguments()
 
     
-    def parse_arguments(self) -> dict:
-        storage = {}
+    def _parse_arguments(self) -> dict:
         for i, param in enumerate(self.command.params):
             if len(self.args) > i:
                 if i + 1 == len(self.command.params):  # This is the last Parameter
-                    storage[param.name] = self.args[i if not param.consume_rest else i:]
+                    self.storage[param.name] = ' '.join(self.args[i if not param.consume_rest else i:])
                 else:
-                    storage[param.name] = self.args[i]
+                    self.storage[param.name] = self.args[i]
             else:
                 if param.default is MISSING:
                     raise MissingRequiredArgument(param.name)
                 else:
-                    storage[param.name] = param.default
-        return storage
+                    self.storage[param.name] = param.default
                 
     
     async def send(self, content: str, to=None, parse_args=True):
         to = to or self.channel
         if isinstance(to, (discord.TextChannel, discord.DMChannel, discord.GroupChannel)):
             to = to.id
-        content = self.bot.parser.parse_content_with_variables(content, self) if parse_args else content
-        with handle_message_parameters(content=content) as params:
+        if (embed := self.bot.parser.parse_for_embed(content, self)):
+            content = None
+        content = self.bot.parser.parse_content_with_variables(content, self) if content and parse_args else content
+        with handle_message_parameters(content=content, embed=embed) as params:
             await self.bot.dpy.http.send_message(to, params=params)
         
     @property
