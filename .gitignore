@@ -1,3 +1,5 @@
 testing/**
 discord.html.egg-info/**
 dist/**
+build/**
+MANIFEST.in
