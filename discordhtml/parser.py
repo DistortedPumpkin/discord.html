@@ -1,7 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 from .errors import CommandMissingData, CommandActionMissingData, CommandActionMissingType
-from .commands import Command, Context
+from .commands import Command, Context, Parameter
+from .utils import MISSING, to_bool
 
 VAR_PATTERN_1 = re.compile(r'<var context="(local|global)">(.*)<\/var>')  # noqa
 VAR_PATTERN_2 = re.compile(r'(\{\{|\[\[)(.*)(\}\}|\]\])')  # noqa
@@ -28,11 +29,20 @@ class Parser:
     def parse_command(self, tag):
         attrs = {}
         for data in tag.find_all('data', recursive=False):
-            attrs[data.attrs['name']] = data.attrs['value']
+            key = data.attrs['name']
+            attrs[key] = attrs.get(key, []) + [data.attrs['value']]
         if not attrs.get('name'):
             raise CommandMissingData(str(tag), 'name')
+        name = attrs['name'][0]
+        params = []
+        for param_tag in tag.find_all('data', {'type': 'param'}, recursive=False):
+            params.append(Parameter(
+                param_tag.attrs['name'], 
+                param_tag.attrs.get('value') or MISSING,  # Empty string will return MISSING 
+                to_bool(param_tag.attrs.get('consume', False))
+            ))
         code = tag.find('div', {'type': 'code'}, recursive=False)
-        command = Command(attrs['name'])
+        command = Command(name, aliases=attrs['name'][1:], params=params)
         if code:
             for action_tag in code.find_all('div', {'type': 'action'}, recursive=False):
                 action = self.bot.action_classes.get(action_tag.attrs.get('action').lower())
