@@ -15,3 +15,10 @@ class Condition(Action):
     async def execute(self, ctx):
         if not eval(self.data['content']):
             return BREAK
+
+
+class Execute(Action):
+    CONTENT_REQUIRED = True
+
+    async def execute(self, ctx):
+        exec(ctx)
