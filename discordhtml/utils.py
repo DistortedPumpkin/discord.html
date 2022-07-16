@@ -1,3 +1,5 @@
+import discord
+
 class _BreakSentinel:
     __slots__ = ()
 
@@ -14,3 +16,4 @@ class _BreakSentinel:
         return '...'
 
 BREAK = _BreakSentinel()
+MISSING = discord.utils.MISSING
