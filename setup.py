@@ -1,9 +1,6 @@
 from setuptools import setup
 import re
 
-requirements = []
-with open('requirements.txt') as f:
-  requirements = f.read().splitlines()
 
 version = ''
 with open('discordhtml/__init__.py') as f:
@@ -21,7 +18,8 @@ setup(
     description='A package to interact with the Discord API by writing HTML',
     long_description=readme,
     author='DistortedPumpkin',
-    install_requires=requirements,
+    install_requires=['discord.py==2.0.0a', 'bs4'],
+    dependency_links=['git+https://github.com/Rapptz/discord.py.git@c7e589033df300d0b305ca43ff7f1de361c9c4af', 'bs4'],
     python_requires='>=3.8.0',
     classifiers = [
         "Programming Language :: Python :: 3",
