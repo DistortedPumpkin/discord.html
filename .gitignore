@@ -1,5 +1,5 @@
-testing/**
 discord.html.egg-info/**
 dist/**
 build/**
 MANIFEST.in
+__pycache__

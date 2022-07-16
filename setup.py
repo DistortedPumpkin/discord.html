@@ -24,6 +24,7 @@ setup(
     description='A package to interact with the Discord API by writing HTML',
     long_description=readme,
     author='DistortedPumpkin',
+    install_requires=['discord.py', 'bs4'],
     dependency_links=['http://github.com/Rapptz/discord.py/tarball/master#egg=discord', 'bs4'],
     python_requires='>=3.8.0',
     classifiers=[

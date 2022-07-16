@@ -26,8 +26,7 @@ class CommandActionMissingData(CommandParsingError):
         super().__init__(f"content was not passed to the following action but was required:\n{tag}")
 
 
-
-class UserInputError:
+class UserInputError(ValueError):
     pass
 
 

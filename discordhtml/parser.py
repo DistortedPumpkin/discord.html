@@ -1,11 +1,12 @@
 import re
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
+from discord import Embed
 from .errors import CommandMissingData, CommandActionMissingData, CommandActionMissingType
 from .commands import Command, Context, Parameter
 from .utils import MISSING, to_bool
 
-VAR_PATTERN_1 = re.compile(r'<var context="(local|global)">(.*)<\/var>')  # noqa
-VAR_PATTERN_2 = re.compile(r'(\{\{|\[\[)(.*)(\}\}|\]\])')  # noqa
+VAR_PATTERN_1 = re.compile(r'<var context="(local|global)">(.*?)<\/var>')  # noqa
+VAR_PATTERN_2 = re.compile(r'(\{\{|\[\[)(.*?)(\}\}|\]\])')  # noqa
 
 
 class Parser:
@@ -13,7 +14,7 @@ class Parser:
         self.bot = bot
     
     def parse(self, html: str, is_main_file: bool = False):
-        soup = BeautifulSoup(html, 'html.parser').find('html')
+        soup = BeautifulSoup(html, 'html.parser').find('html', recursive=False)
 
         if is_main_file:
             # Iterate through header vars and add them to storage
@@ -26,7 +27,7 @@ class Parser:
         for div in soup.find_all('div', {'type': 'command'}, recursive=False):
             self.parse_command(div)
     
-    def parse_command(self, tag):
+    def parse_command(self, tag: Tag):
         attrs = {}
         for data in tag.find_all('data', recursive=False):
             key = data.attrs['name']
@@ -45,13 +46,18 @@ class Parser:
         command = Command(name, aliases=attrs['name'][1:], params=params)
         if code:
             for action_tag in code.find_all('div', {'type': 'action'}, recursive=False):
-                action = self.bot.action_classes.get(action_tag.attrs.get('action').lower())
+                action = self.bot.action_classes.get(action_tag.attrs.pop('action', '').lower())
                 if not action:
                     raise CommandActionMissingType(action_tag)
-                if not action_tag.text:
+                contents = action_tag.decode_contents()
+                if not contents:
                     raise CommandActionMissingData(action_tag)
+
+                del action_tag.attrs['type']
+
                 data = {
-                    'content': self.transform_var(action_tag.decode_contents())
+                    'content': self.transform_var(contents),
+                    **action_tag.attrs
                 }
                 command.add_action(action(data))
         self.bot.add_command(command)
@@ -81,7 +87,7 @@ class Parser:
             storage = ctx.storage if m.group(1) == '{{' else ctx.bot.storage
             current = storage.get(thing[0], thing[0])
             if len(thing) < 2:
-                return current
+                return str(current)
             for attr in thing[1:]:  # Deal wiith x.y.z because that must be done after getting the variable from storage
                 try:
                     res = getattr(current, attr)
@@ -90,3 +96,45 @@ class Parser:
                 current = res
             return str(current)
         return VAR_PATTERN_2.sub(repl, content)
+    
+    def parse_for_embed(self, tag: str, ctx: Context) -> Embed:
+        """Parse an embed div tag into a discord.Embed object that can be sent on Discord
+        Example:
+            >>> self.parse_for_embed('''
+            ... <div type="embed" title="Hello There" color="#00BEEF">
+            ...    <data name="description" value=""> <!-- Add blank value because we want to use variables but value is required for data tags-->
+            ...        Hello <var context="local">ctx.author.mention</var>!
+            ...    </data>
+            ... </div>'''
+            ... )
+            <discord.Embed object at 0x...>
+        """
+        tag = BeautifulSoup(tag, 'html.parser').find('div')
+        if not tag or tag.attrs.get('type') != 'embed':
+            return None
+
+        def get_attribute(t: Tag, attr: str, search_inside=True):
+            if t.attrs.get(attr):
+                return t.attrs[attr]
+            if search_inside:
+                if (elem := t.find('data', {'name': attr}, recursive=False)):
+                    return elem.attrs.get('value') or self.parse_content_with_variables(self.transform_var(elem.decode_contents()), ctx)
+            return None
+        
+        color = get_attribute(tag, 'color')
+        color = int(color[1:], base=16) if color else None
+        embed = Embed(title=get_attribute(tag, 'title'), description=get_attribute(tag, 'description'), color=color)
+        for field_tag in tag.find_all('fieldset', recursive=False):
+            d = {}
+            for label in field_tag.find_all('label', recursive=False):
+                l_for = label.attrs['for']
+                value = label.decode_contents()
+                d[l_for] = self.parse_content_with_variables(
+                    self.transform_var(str(value)), ctx
+                ) if l_for in ('name', 'value') else str(value)
+            embed.add_field(
+                name=d.get('name'), value=d.get('value'), inline=to_bool(d.get('inline', True))
+            )
+        
+        return embed
+        
